@@ -1,0 +1,81 @@
+.Container {
+    height: 130px;
+    width: 550px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+}
+
+.Bgs {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+
+    &:after {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        z-index: 20;
+    }
+}
+
+@keyframes appear {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes disappear {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+.Bg {
+    $animations-speed: 0.25s;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+    animation-duration: 0s;
+    animation-delay: $animations-speed;
+    animation-timing-function: ease-in-out;
+    animation-name: disappear;
+
+    &:last-child {
+        animation-duration: $animations-speed;
+        animation-delay: 0s;
+        animation-name: appear;
+    }
+}
+
+.Content {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 100;
+}
+
+.ContentFixer {
+    height: 100%;
+    width: 100%;
+}

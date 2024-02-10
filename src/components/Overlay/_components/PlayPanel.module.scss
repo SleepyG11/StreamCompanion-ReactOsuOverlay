@@ -1,0 +1,75 @@
+.Container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: stretch;
+    gap: 8px;
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    transition: 0.5s;
+    opacity: 0;
+    transform: translateY(150%);
+}
+
+.ContainerVisible {
+    opacity: 1;
+    transform: translateY(0px);
+}
+
+.Item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+    color: rgb(240, 240, 240);
+    font-weight: 700;
+    line-height: 1;
+
+    &:after {
+        content: '';
+        display: block;
+        height: 5px;
+        width: 100%;
+        border-radius: 4px;
+
+    }
+}
+
+.ItemTime {
+    &:after {
+        min-width: 48px;
+        background-color: #51a347;
+    }
+}
+
+.ItemMisses {
+    &:after {
+        min-width: 32px;
+        background-color: #ff5c5c;
+    }
+}
+
+// ------------
+
+.Mods {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 24px;
+
+    &>img {
+        height: 24.5px;
+        // width: 32px;
+        margin-left: -12px;
+        display: block;
+        margin-bottom: -0.75px;
+    }
+}
+
+.Mods4 {
+    &>img {
+        margin-left: -20px;
+    }
+}

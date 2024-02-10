@@ -1,0 +1,247 @@
+.Container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 12px;
+    z-index: 50;
+}
+
+$title-duration: 0.5s;
+
+// ------------------------
+
+.TopRow {
+    position: absolute;
+    color: rgb(240, 240, 240);
+    font-size: 16px;
+    height: 24px;
+    line-height: 1.5;
+    opacity: 0;
+    transition: 0.5s;
+    transform: translateY(-100%);
+}
+
+.ContainerMainMenu {
+    .TopRow {
+        opacity: 1;
+        margin: 8px 0 4px;
+        height: 1.25em;
+        transform: translateX(0px);
+    }
+}
+
+.Artist {
+    width: 100%;
+    overflow: hidden;
+    max-width: 300px;
+    transition: max-width $title-duration;
+}
+
+// ------------------------
+
+.MiddleRow {
+    position: absolute;
+    padding-top: 0px;
+    height: 1.25em;
+    box-sizing: content-box;
+    font-size: 28px;
+    max-width: 300px;
+    width: 300px;
+    overflow: hidden;
+    transition: 0.5s;
+    font-weight: 600;
+}
+
+.ContainerMainMenu {
+    .MiddleRow {
+        width: 526px;
+        max-width: 526px;
+        padding-top: 32px;
+    }
+}
+
+.ShortTitle {
+    position: absolute;
+    overflow: hidden;
+
+    color: rgb(240, 240, 240);
+
+    max-width: 300px;
+    opacity: 1;
+    transition: opacity $title-duration $title-duration, max-width $title-duration;
+}
+
+.LongTitle {
+    position: absolute;
+    overflow: hidden;
+
+    color: rgb(240, 240, 240);
+    font-size: 28px;
+
+    max-width: 300px;
+    opacity: 0;
+    transition: opacity $title-duration $title-duration, max-width $title-duration;
+}
+
+.ShortTitleLabel {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: visible;
+    transition: animation-play-state 0s $title-duration * 2;
+    min-width: 300px;
+}
+
+.LongTitleLabel {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: visible;
+    transition: animation-play-state 0s $title-duration * 2;
+    min-width: 526px;
+}
+
+.ShortTitleOverflow .ShortTitleLabel {
+    animation-name: line-short-overflow;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-play-state: running;
+}
+
+.LongTitleOverflow .LongTitleLabel {
+    animation-name: line-long-overflow;
+    animation-duration: 7.5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-play-state: paused;
+}
+
+.ContainerMainMenu {
+    .ShortTitle {
+        max-width: 526px;
+        opacity: 0;
+    }
+
+    .LongTitle {
+        max-width: 526px;
+        opacity: 1;
+    }
+
+    .Artist {
+        max-width: 526px;
+    }
+
+    .ShortTitleOverflow .ShortTitleLabel {
+        animation-play-state: paused;
+    }
+
+    .LongTitleOverflow .LongTitleLabel {
+        animation-play-state: running;
+    }
+}
+
+$animation-long-fix: 526px;
+$animation-short-fix: 300px;
+
+@keyframes line-long-overflow {
+    0% {
+        opacity: 1;
+        transform: translate(0px);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translate(0px);
+    }
+
+    80% {
+        transform: translate(calc(-100% + #{$animation-long-fix}));
+        opacity: 1;
+    }
+
+    95% {
+        transform: translate(calc(-100% + #{$animation-long-fix}));
+        opacity: 1;
+    }
+
+    97.5% {
+        transform: translate(calc(-100% + #{$animation-long-fix}));
+        opacity: 0;
+    }
+
+    97.6% {
+        transform: translate(0px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translate(0px);
+        opacity: 1;
+    }
+}
+
+@keyframes line-short-overflow {
+    0% {
+        opacity: 1;
+        transform: translate(0px);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translate(0px);
+    }
+
+    80% {
+        transform: translate(calc(-100% + #{$animation-short-fix}));
+        opacity: 1;
+    }
+
+    95% {
+        transform: translate(calc(-100% + #{$animation-short-fix}));
+        opacity: 1;
+    }
+
+    97.5% {
+        transform: translate(calc(-100% + #{$animation-short-fix}));
+        opacity: 0;
+    }
+
+    97.6% {
+        transform: translate(0px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translate(0px);
+        opacity: 1;
+    }
+}
+
+// ------------------------
+
+.BottomRow {
+    color: rgb(240, 240, 240);
+    font-size: 16px;
+    height: 24px;
+    line-height: 1.5;
+    opacity: 1;
+    transition: 0.5s;
+    box-sizing: content-box;
+    padding-top: 32px;
+    font-weight: 600;
+
+    transform: translateX(0px);
+}
+
+.Difficulty {
+    width: 100%;
+    overflow: hidden;
+    max-width: 300px;
+    transition: max-width $title-duration;
+}
+
+.ContainerMainMenu .BottomRow {
+    opacity: 0;
+    height: 0em;
+    margin: 4px 0 -4px;
+    transform: translateX(250px);
+}

@@ -1,0 +1,19 @@
+{
+    "Width": 550,
+    "Height": 130,
+    "csBottomThreshold": 2,
+    "arBottomThreshold": 5,
+    "odBottomThreshold": 5,
+    "hpBottomThreshold": 2,
+    "csTopThreshold": 5,
+    "arTopThreshold": 9.5,
+    "odTopThreshold": 9.5,
+    "hpTopThreshold": 5,
+    "useNegativeTimeInPlayTimer": false,
+    "useOriginalLanguageForSongArtistAndTitle": false,
+    "adjustTimeBySpeedMods": false,
+    "showFcPhrase": false,
+    "fcPhrase": "{pp} pp FC, not bad!",
+    "showSsPhrase": false,
+    "ssPhrase": "Wow! {pp} pp SS!"
+}

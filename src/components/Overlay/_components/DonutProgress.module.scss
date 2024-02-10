@@ -1,0 +1,27 @@
+.Container {
+    position: relative;
+    width: max-content;
+}
+
+.Label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+.Svg {
+    --color: 200 0 0;
+    display: block;
+    position: relative;
+    z-index: 1;
+}
+
+.PercentCircle {
+    stroke: rgb(var(--color));
+}
+
+.FullCircle {
+    stroke: rgb(var(--color) / 0.5)
+}
