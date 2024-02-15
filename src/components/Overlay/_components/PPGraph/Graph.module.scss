@@ -1,0 +1,22 @@
+.Chart {
+    background-color: rgba(0, 0, 0, 0.45);
+    box-shadow: 0 0 4px 0px rgba(0, 0, 0, 0.45);
+    border-radius: 4px;
+    transition: 0.5s;
+    // transform: translateX(250px);
+    opacity: 0;
+}
+
+.ChartVisible {
+    // transform: translateX(0px);
+    opacity: 1;
+}
+
+.Line {
+    transition: opacity 0.5s;
+    opacity: 0.85 !important;
+}
+
+.LineHidden {
+    opacity: 0 !important;
+}

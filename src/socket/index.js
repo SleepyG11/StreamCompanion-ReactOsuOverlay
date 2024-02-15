@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useSyncExternalStore } from 'react';
 import ReconnectingWebSocket from '../libs/reconnecting-websocket';
 import { config, osuGrade, osuStatus, rawOsuStatus } from '../libs/consts';
 import { useTransitionValue } from 'react-transition-value';
@@ -28,6 +28,8 @@ function createSocket() {
 		reconnectInterval: 3000,
 	});
 }
+
+// ---------------------------
 
 export const TOKENS = {
 	INTERFACE_ENABLED: 'ingameInterfaceIsEnabled',
@@ -82,6 +84,7 @@ export const TOKENS = {
 	MAP_MODS_RAW: 'modsEnum',
 	MAP_MODS_ARRAY: 'mods',
 
+	MAP_PP_100_MANIA: 'mania_1_000_000PP',
 	MAP_PP_100: 'osu_mSSPP',
 	MAP_PP_99: 'osu_m99PP',
 	MAP_PP_98: 'osu_m98PP',
@@ -112,6 +115,7 @@ export const TOKENS = {
 	PLAY_PP_CURRENT: 'ppIfMapEndsNow',
 	PLAY_PP_IF_FC: 'ppIfRestFced',
 	PLAY_PP_MAX: 'osu_mSSPP',
+	PLAY_PP_SIMULATED: 'simulatedPp',
 
 	PLAY_GRADE_CURRENT: 'grade',
 	PLAY_GRADE_IF_FC: 'maxGrade',
@@ -235,6 +239,8 @@ class TokensManager {
 }
 const tokensManager = new TokensManager();
 
+// ---------------------------
+
 export default function useOsuToken(key) {
 	let value = useOsuRawToken(
 		key,
@@ -267,6 +273,9 @@ export function useAllOsuTokens() {
 	let value = useSyncExternalStore((l) => tokensManager.subscribe(l), tokensManager.getAllTokens(), tokensManager.getAllServerTokens());
 	return value;
 }
+
+// ---------------------------
+
 export function useOsuBackgroundDir() {
 	let dir = useOsuToken(TOKENS.MAP_FOLDER);
 	let file = useOsuToken(TOKENS.MAP_BG);
@@ -281,11 +290,13 @@ export function useOsuMapProgress() {
 	let endTime = useOsuToken(TOKENS.MAP_TIME_FULL);
 	let audioTime = useOsuToken(TOKENS.MAP_TIME_AUDIO);
 
-	let divider = 1;
-	if (state === 'playing' && config.adjustTimeBySpeedMods) {
-		if (mods.includes('DT') || mods.includes('NC')) divider = 1.5;
-		else if (mods.includes('HT')) divider = 0.75;
-	}
+	let divider = useMemo(() => {
+		if (state === 'playing' && config.adjustTimeBySpeedMods) {
+			if (mods.includes('DT') || mods.includes('NC')) return 1.5;
+			else if (mods.includes('HT')) return 0.75;
+		}
+		return 1;
+	}, [state, config, mods]);
 
 	let percent = Math.max(0, Math.min(1, (currentTime - startTime) / (endTime - startTime)));
 
@@ -335,4 +346,19 @@ export function useOsuStateType() {
 			return 'idle';
 		}
 	}
+}
+export function useOsuMapMaxFcPP(from = 0, options = { duration: 500, throttleZero: false }) {
+	const gameMode = useOsuToken(TOKENS.GAMEMODE);
+	const value = useOsuToken(gameMode === 'OsuMania' ? TOKENS.MAP_PP_100_MANIA : TOKENS.MAP_PP_100, from, options);
+	return value;
+}
+export function useOsuMapFcPP(from = 0, options = { duration: 500, throttleZero: false }) {
+	const gameMode = useOsuToken(TOKENS.GAMEMODE);
+	const value = useOsuToken(gameMode === 'OsuMania' ? TOKENS.PLAY_PP_SIMULATED : TOKENS.PLAY_PP_IF_FC, from, options);
+	return value;
+}
+
+export function useOsuMapCurrentPP(from = 0, options = { duration: 500, throttleZero: false }) {
+	const value = useOsuToken(TOKENS.PLAY_PP_CURRENT, from, options);
+	return value;
 }

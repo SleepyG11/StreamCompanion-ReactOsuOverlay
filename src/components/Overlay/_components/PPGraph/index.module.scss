@@ -1,0 +1,15 @@
+.Container {
+    transition: 0.5s;
+    position: absolute;
+    padding: 12px;
+    bottom: 0;
+    left: 0;
+    width: 60%;
+    transform: translateX(250px);
+    opacity: 0;
+}
+
+.ContainerVisible {
+    transform: translateX(0);
+    opacity: 1;
+}
