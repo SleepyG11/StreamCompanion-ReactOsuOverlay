@@ -10,11 +10,10 @@
     line-height: 1.2;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
     white-space: nowrap;
 
     opacity: 0;
-    transform: translate(calc(-50% + 250px), -50%);
+    transform: translate(calc(-50% + 250px), calc(-50% + 5px));
     transition: 0.5s;
 
     &>span {
@@ -40,7 +39,7 @@
 }
 
 .Pp {
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, calc(-50% + 2px));
 }
 
 .PpVisible {

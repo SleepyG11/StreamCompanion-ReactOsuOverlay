@@ -21,7 +21,7 @@ export function formatTime(ms = 0, onlyPositive = false) {
 }
 function createSocket() {
 	let url = new URL(`${config.getWs()}/tokens`);
-	url.searchParams.append('updatesPerSecond', 5);
+	url.searchParams.append('updatesPerSecond', 10);
 	url.searchParams.append('bulkUpdates', 'MainPipeline,LiveTokens');
 	return new ReconnectingWebSocket(url.href, null, {
 		automaticOpen: false,
@@ -185,21 +185,21 @@ class TokensManager {
 			this.tokens = Object.assign({}, this.tokens, JSON.parse(e.data));
 			this.listeners.forEach((listener) => listener());
 		};
+		this.socket.onopen = () => {
+			this.socket.send(JSON.stringify(Object.keys(this.tokensRequests)));
+		};
 		this.socket.open();
+
+		this.updateRequest = null;
 	}
 
 	updateTokensToWatch() {
-		if (this.socket.readyState !== WebSocket.OPEN) {
-			this.socket.addEventListener(
-				'open',
-				() => {
-					this.socket.send(JSON.stringify(Object.keys(this.tokensRequests)));
-				},
-				{ once: true }
-			);
-		} else {
+		if (this.socket.readyState !== WebSocket.OPEN) return;
+		if (this.updateRequest) return;
+		this.updateRequest = window.requestAnimationFrame(() => {
 			this.socket.send(JSON.stringify(Object.keys(this.tokensRequests)));
-		}
+			this.updateRequest = null;
+		});
 	}
 
 	getToken(key) {
@@ -216,17 +216,19 @@ class TokensManager {
 		return () => this.tokens;
 	}
 
-	subscribe(listener, key) {
-		this.listeners.push(listener);
-		if (key) {
-			if (!this.tokensRequests[key]) {
-				this.tokensRequests[key] = 1;
-				this.updateTokensToWatch();
-			} else {
-				this.tokensRequests[key]++;
+	subscribe(key) {
+		return (listener) => {
+			this.listeners.push(listener);
+			if (key) {
+				if (!this.tokensRequests[key]) {
+					this.tokensRequests[key] = 1;
+					this.updateTokensToWatch();
+				} else {
+					this.tokensRequests[key]++;
+				}
 			}
-		}
-		return () => this.unsubscribe(listener, key);
+			return () => this.unsubscribe(listener, key);
+		};
 	}
 	unsubscribe(listener, key) {
 		removeFromArray(this.listeners, listener);
@@ -253,24 +255,31 @@ export default function useOsuToken(key) {
 }
 export function useOsuRawToken(key, format = (v) => v) {
 	if (!key) throw new Error('Token name not provided');
-	let value = useSyncExternalStore(
-		(l) => tokensManager.subscribe(l, key),
-		tokensManager.getToken(key),
-		tokensManager.getServerToken(key)
-	);
+
+	const subscribe = useMemo(() => {
+		return tokensManager.subscribe(key);
+	}, [key]);
+
+	let value = useSyncExternalStore(subscribe, tokensManager.getToken(key), tokensManager.getServerToken(key));
 	return format(value);
 }
 export function useOsuTransitionToken(key, from = 0, options = { duration: 500, throttleZero: false }) {
 	let rawValue = useOsuToken(key);
 	let [value, setValue] = useTransitionValue(from, options);
+
 	useEffect(() => {
 		setValue(Number(rawValue) || 0);
 	}, [rawValue, setValue]);
+
 	if (options.throttleZero && value < 0.01) return 0;
 	return value;
 }
 export function useAllOsuTokens() {
-	let value = useSyncExternalStore((l) => tokensManager.subscribe(l), tokensManager.getAllTokens(), tokensManager.getAllServerTokens());
+	const subscribe = useMemo(() => {
+		return tokensManager.subscribe();
+	}, []);
+
+	let value = useSyncExternalStore(subscribe, tokensManager.getAllTokens(), tokensManager.getAllServerTokens());
 	return value;
 }
 
