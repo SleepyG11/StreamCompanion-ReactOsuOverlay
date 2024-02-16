@@ -123,13 +123,6 @@ export default function Graph({ visible = false }) {
 		setPPDots([]);
 	}, [mapId]);
 
-	useEffect(() => {
-		console.log('Mounted');
-		return () => {
-			console.log('Unmounted');
-		};
-	}, []);
-
 	const maxPpScatter = useMemo(() => {
 		return (
 			<Scatter
