@@ -1,23 +1,23 @@
 import { useEffect, useRef, useState } from 'react';
-import { useOsuBackgroundDir, useOsuStateType } from '../../socket';
-import { config } from '../../libs/consts';
+import { useOsuBackgroundDir, useOsuStateType } from 'socket';
+import SOCKET from 'enums/SOCKET';
 
 import styles from './index.module.scss';
 
-import OverlaySongPlayer from './_components/SongPlayer';
-import OverlaySongMeta from './_components/SongMeta';
-import OverlayStats from './_components/Stats';
-import OverlayPlayPanel from './_components/PlayPanel';
-import OverlayPPGraph from './_components/PPGraph';
+import OverlaySongPlayer from './SongPlayer';
+import OverlaySongMeta from './SongMeta';
+import OverlayStats from './Stats';
+import OverlayPlayPanel from './PlayPanel';
+import OverlayPPGraph from './PPGraph';
 
-const defaultBgUrl = 'default-bg.jpg';
+const DEFAULT_BG_URL = 'default-bg.jpg';
 
 export default function Overlay() {
 	const state = useOsuStateType();
 	const mapBg = useOsuBackgroundDir();
 	const bgCache = useRef(null);
 
-	const [bgList, setBgList] = useState([defaultBgUrl]);
+	const [bgList, setBgList] = useState([DEFAULT_BG_URL]);
 
 	useEffect(() => {
 		if (mapBg === bgCache.current) return;
@@ -25,15 +25,15 @@ export default function Overlay() {
 		if (mapBg === 'undefined\\undefined') {
 			setBgList((l) => {
 				let last = l[l.length - 1];
-				return last === defaultBgUrl ? l : [last, defaultBgUrl];
+				return last === DEFAULT_BG_URL ? l : [last, DEFAULT_BG_URL];
 			});
 		} else {
-			let url = `${config.getUrl()}/Songs/${encodeURI(mapBg.replace(/\\/g, '/'))}?${Date.now()}`;
+			let url = `${SOCKET.URL}/Songs/${encodeURI(mapBg.replace(/\\/g, '/'))}?${Date.now()}`;
 			let img = new Image();
 			img.onerror = () => {
 				setBgList((l) => {
 					let last = l[l.length - 1];
-					return last === defaultBgUrl ? l : [last, defaultBgUrl];
+					return last === DEFAULT_BG_URL ? l : [last, DEFAULT_BG_URL];
 				});
 			};
 			img.onload = () => {

@@ -1,9 +1,11 @@
 import classNames from 'classnames';
-import useOsuToken, { TOKENS, useOsuStateType } from '../../../socket';
+import { useEffect, useRef, useState } from 'react';
+
+import useOsuToken, { useOsuStateType } from 'socket';
+import useJSONConfig from 'config';
+import TOKENS from 'enums/TOKENS';
 
 import styles from './SongMeta.module.scss';
-import { useEffect, useRef, useState } from 'react';
-import useConfigs from '../../Configurator/context';
 
 const containerStates = {
 	idle: styles.ContainerMainMenu,
@@ -13,7 +15,8 @@ const longOverflowPoint = 550 - 12 * 2;
 const shortOverflowPoint = 300;
 
 export default function OverlaySongMeta() {
-	const [config] = useConfigs();
+	const config = useJSONConfig();
+
 	const shortTitleRef = useRef();
 	const longTitleRef = useRef();
 	const artistRef = useRef();
@@ -26,11 +29,12 @@ export default function OverlaySongMeta() {
 
 	const romanSongTitle = useOsuToken(TOKENS.MAP_TITLE);
 	const originalSongTitle = useOsuToken(TOKENS.MAP_TITLE_ORIGINAL);
-	const songTitle = config.useOriginalLanguageForSongArtistAndTitle ? originalSongTitle : romanSongTitle;
 	const romanSongArtist = useOsuToken(TOKENS.MAP_ARTIST);
 	const originalSongArtist = useOsuToken(TOKENS.MAP_ARTIST_ORIGINAL);
-	const songArtist = config.useOriginalLanguageForSongArtistAndTitle ? originalSongArtist : romanSongArtist;
 	const songDifficulty = useOsuToken(TOKENS.MAP_DIFFICULTY);
+
+	let songTitle = config.useOriginalLanguageForSongArtistAndTitle ? originalSongTitle : romanSongTitle;
+	let songArtist = config.useOriginalLanguageForSongArtistAndTitle ? originalSongArtist : romanSongArtist;
 
 	function recalculateOverflows() {
 		setTitleOverflow({
@@ -43,7 +47,7 @@ export default function OverlaySongMeta() {
 
 	useEffect(recalculateOverflows, [songTitle]);
 	useEffect(() => {
-		let interval = setInterval(recalculateOverflows, 1000);
+		let interval = setInterval(recalculateOverflows, 2500);
 		return () => clearInterval(interval);
 	}, []);
 

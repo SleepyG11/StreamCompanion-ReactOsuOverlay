@@ -1,9 +1,7 @@
-'use client';
-
 import Odometer from 'react-odometerjs';
 import styles from './Base.module.scss';
 import classNames from 'classnames';
-import { useOsuMapFcPP, useOsuMapMaxFcPP } from '../../../../../socket';
+import { useOsuMapFcPP, useOsuMapMaxFcPP } from 'socket';
 
 export default function PpResultLabel({ visible = false }) {
 	const ifFcPP = useOsuMapFcPP(0, { duration: 250 });

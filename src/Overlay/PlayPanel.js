@@ -1,22 +1,27 @@
 import classNames from 'classnames';
-import useOsuToken, { TOKENS, useOsuMapProgress, useOsuStateType } from '../../../socket';
+import { useMemo } from 'react';
+
+import useJSONConfig from 'config';
+import useOsuToken, { useOsuMapProgress, useOsuStateType } from 'socket';
+
+import TOKENS from 'enums/TOKENS';
+
 import DonutProgress from './DonutProgress';
 import styles from './PlayPanel.module.scss';
-import { Fragment } from 'react';
-import useConfigs from '../../Configurator/context';
 
 const MODS_TO_DISPLAY = ['AP', 'AT', 'CN', 'DT', 'EZ', 'FL', 'HD', 'HR', 'HT', 'NC', 'NF', 'PF', 'RX', 'SD', 'SO', 'TP', 'NM'];
 
 export default function OverlayPlayPanel() {
-	const [config] = useConfigs();
+	const config = useJSONConfig();
+
 	const state = useOsuStateType();
-	const mods = useOsuToken(TOKENS.MAP_MODS_ARRAY);
-	const modsArray = mods.split(',');
-	const validModsCount = modsArray.reduce((acc, mod) => acc + MODS_TO_DISPLAY.includes(mod), 0);
-
 	const progress = useOsuMapProgress();
-
+	const mods = useOsuToken(TOKENS.MAP_MODS_ARRAY);
 	const missesCount = useOsuToken(TOKENS.PLAY_0);
+
+	let modsArray = useMemo(() => {
+		return mods.split(',').filter((mod) => MODS_TO_DISPLAY.includes(mod));
+	}, [mods]);
 
 	return (
 		<div
@@ -26,13 +31,12 @@ export default function OverlayPlayPanel() {
 		>
 			<div
 				className={classNames(styles.Mods, {
-					[styles.Mods4]: validModsCount > 3,
+					[styles.Mods4]: modsArray.length > 3,
 				})}
 			>
-				{modsArray.map((mod) => {
-					if (MODS_TO_DISPLAY.includes(mod)) return <img key={mod} src={`mods/${mod}.png`} alt='mod' />;
-					return <Fragment key={mod} />;
-				})}
+				{modsArray.map((mod) => (
+					<img key={mod} src={`mods/${mod}.png`} alt='mod' />
+				))}
 			</div>
 			<div className={classNames(styles.Item, styles.ItemMisses)}>{missesCount}</div>
 			<div className={classNames(styles.Item, styles.ItemTime)}>

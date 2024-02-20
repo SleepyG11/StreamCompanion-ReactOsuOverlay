@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
-const defaultConfig = {
+const DEFAULT_CONFIG = {
 	csBottomThreshold: 2,
 	arBottomThreshold: 5,
 	odBottomThreshold: 5,
@@ -22,25 +22,25 @@ const defaultConfig = {
 	ssPhrase: '{pp} pp',
 };
 
-/**
- * @type {Context<[configs: object, setConfigs: object => void]>}
- */
-const context = createContext([{}, () => {}]);
+const context = createContext({});
 
-export function ConfigsProvider({ children }) {
-	const [config, setConfig] = useState(defaultConfig);
+export function JSONConfigProvider({ children }) {
+	const [config, setConfig] = useState(DEFAULT_CONFIG);
 
 	useEffect(() => {
-		fetch('./settings.json')
+		let controller = new AbortController();
+		fetch('./settings.json', { signal: controller.signal })
 			.then((r) => r.json())
-			.then(setConfig);
+			.then(setConfig)
+			.catch(console.error);
+		return () => {
+			controller.abort();
+		};
 	}, []);
 
-	function updateConfig(v) {}
-
-	return <context.Provider value={[config, updateConfig]}>{children}</context.Provider>;
+	return <context.Provider value={config}>{children}</context.Provider>;
 }
 
-export default function useConfigs() {
+export default function useJSONConfig() {
 	return useContext(context);
 }

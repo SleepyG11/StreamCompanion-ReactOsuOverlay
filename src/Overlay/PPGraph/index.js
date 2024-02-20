@@ -1,20 +1,19 @@
-'use client';
-
 import { useEffect, useState } from 'react';
-import useOsuToken, { TOKENS, useOsuStateType } from '../../../../socket';
+import useOsuToken, { useOsuStateType } from 'socket';
 import classNames from 'classnames';
 
 import styles from './index.module.scss';
-import useConfigs from '../../../Configurator/context';
 import Graph from './Graph';
 import PpResultLabel from './ppLabels/ResultLabel';
 import PpFcLabel from './ppLabels/FCLabel';
 import PpSSLabel from './ppLabels/SSLabel';
 import PpSongSelectLabel from './ppLabels/SongSelectLabel';
 import PpPlayingLabel from './ppLabels/PlayingLabel';
+import TOKENS from 'enums/TOKENS';
+import useJSONConfig from 'config';
 
 export default function OverlayPPGraph() {
-	const [config] = useConfigs();
+	const config = useJSONConfig();
 
 	const state = useOsuStateType();
 	const misses = useOsuToken(TOKENS.PLAY_0);

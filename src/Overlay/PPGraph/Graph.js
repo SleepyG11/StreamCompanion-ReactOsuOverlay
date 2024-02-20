@@ -1,10 +1,12 @@
-'use client';
-
 import { useEffect, useMemo, useState } from 'react';
-import useOsuToken, { TOKENS, useOsuStateType, useOsuMapMaxFcPP, useOsuMapFcPP, useOsuMapCurrentPP } from '../../../../socket';
-import { XAxis, YAxis, Scatter, ScatterChart } from 'recharts';
-import styles from './Graph.module.scss';
 import classNames from 'classnames';
+import { XAxis, YAxis, Scatter, ScatterChart } from 'recharts';
+
+import useOsuToken, { useOsuStateType, useOsuMapMaxFcPP, useOsuMapFcPP, useOsuMapCurrentPP } from 'socket';
+
+import TOKENS from 'enums/TOKENS';
+
+import styles from './Graph.module.scss';
 
 function RenderNoShape() {
 	return null;
@@ -48,20 +50,23 @@ function halfArray(array) {
 }
 
 export default function Graph({ visible = false }) {
-	const [maxPPDots, setMaxPPDots] = useState([]);
-	const [ppDots, setPPDots] = useState([]);
 	const [reloaded, setReloaded] = useState(false);
 	const [fade, setFade] = useState(false);
 
+	const [maxPPDots, setMaxPPDots] = useState([]);
+	const [ppDots, setPPDots] = useState([]);
+
 	const state = useOsuStateType();
 
+	const mapId = useOsuToken(TOKENS.MAP_ID);
 	const currentTime = useOsuToken(TOKENS.MAP_TIME_CURRENT);
 	const fullTime = useOsuToken(TOKENS.MAP_TIME_FULL);
 	const firstObjTime = useOsuToken(TOKENS.MAP_TIME_FIRST_OBJECT);
 	const ifFcPP = useOsuMapFcPP(0, { duration: 500 });
 	const fullFcPP = useOsuMapMaxFcPP(0, { duration: 500 });
-	const mapId = useOsuToken(TOKENS.MAP_ID);
 	const currentPP = useOsuMapCurrentPP(0, { duration: 500 });
+
+	// ----------------------
 
 	const updater = useMemo(() => {
 		return throttle((cT, fcPp, cPp) => {
@@ -72,7 +77,7 @@ export default function Graph({ visible = false }) {
 					lastElement.x = cT;
 					return [...d];
 				}
-				if (d.length > 600) d = halfArray(d);
+				if (d.length > 500) d = halfArray(d);
 				return [...d, { x: cT, y: fcPp }];
 			});
 			setPPDots((d) => {
@@ -81,10 +86,10 @@ export default function Graph({ visible = false }) {
 					lastElement.x = cT;
 					return [...d];
 				}
-				if (d.length > 600) d = halfArray(d);
+				if (d.length > 500) d = halfArray(d);
 				return [...d, { x: cT, y: cPp }];
 			});
-		}, 400);
+		}, 500);
 	}, []);
 
 	useEffect(() => {
@@ -101,9 +106,9 @@ export default function Graph({ visible = false }) {
 				setPPDots([]);
 			}, 500);
 		} else {
-			updater(currentTime, ~~ifFcPP, ~~currentPP);
+			updater(currentTime, Math.round(ifFcPP), Math.round(currentPP));
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line
 	}, [currentTime]);
 
 	useEffect(() => {
@@ -123,8 +128,10 @@ export default function Graph({ visible = false }) {
 		setPPDots([]);
 	}, [mapId]);
 
-	const maxPpScatter = useMemo(() => {
-		return (
+	// ----------------------
+
+	const maxPpScatter = useMemo(
+		() => (
 			<Scatter
 				key={'maxPp'}
 				isAnimationActive={false}
@@ -139,11 +146,11 @@ export default function Graph({ visible = false }) {
 				})}
 				shape={<RenderNoShape />}
 			/>
-		);
-	}, [maxPPDots, fade]);
-
-	const ppScatter = useMemo(() => {
-		return (
+		),
+		[maxPPDots, fade]
+	);
+	const ppScatter = useMemo(
+		() => (
 			<Scatter
 				key={'currentPp'}
 				isAnimationActive={false}
@@ -158,25 +165,27 @@ export default function Graph({ visible = false }) {
 				})}
 				shape={<RenderNoShape />}
 			/>
-		);
-	}, [ppDots, fade]);
+		),
+		[ppDots, fade]
+	);
+	const xAxis = useMemo(
+		() => <XAxis key={'x'} type='number' dataKey='x' hide domain={[firstObjTime, fullTime]} />,
+		[firstObjTime, fullTime]
+	);
+	const yAxis = useMemo(() => <YAxis key={'y'} type='number' dataKey='y' hide domain={[0, fullFcPP]} />, [fullFcPP]);
 
-	let result = useMemo(() => {
-		return (
-			<ScatterChart
-				width={300}
-				height={48}
-				className={classNames(styles.Chart, {
-					[styles.ChartVisible]: visible,
-				})}
-			>
-				<XAxis key={'x'} type='number' dataKey='x' hide domain={[firstObjTime, fullTime]} />
-				<YAxis key={'y'} type='number' dataKey='y' hide domain={[0, fullFcPP]} />
-				{maxPpScatter}
-				{ppScatter}
-			</ScatterChart>
-		);
-	}, [maxPpScatter, ppScatter, visible, firstObjTime, fullTime, fullFcPP]);
-
-	return result;
+	return (
+		<ScatterChart
+			width={300}
+			height={48}
+			className={classNames(styles.Chart, {
+				[styles.ChartVisible]: visible,
+			})}
+		>
+			{xAxis}
+			{yAxis}
+			{maxPpScatter}
+			{ppScatter}
+		</ScatterChart>
+	);
 }

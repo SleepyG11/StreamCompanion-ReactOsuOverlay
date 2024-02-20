@@ -1,4 +1,4 @@
-import { useOsuMapProgress } from '../../../socket';
+import { useOsuMapProgress } from 'socket';
 import styles from './DonutProgress.module.scss';
 
 export default function DonutProgress({ size = 80, width = 8, color, displayLabel = false }) {

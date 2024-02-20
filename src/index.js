@@ -1,14 +1,16 @@
-'use client';
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import './libs/odometer-theme-default.css';
-import App from './App';
+import 'index.scss';
+import 'libs/odometer-theme-default.css';
+
+import Overlay from 'Overlay';
+import { JSONConfigProvider } from 'config';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
 	<React.StrictMode>
-		<App />
+		<JSONConfigProvider>
+			<Overlay />
+		</JSONConfigProvider>
 	</React.StrictMode>
 );

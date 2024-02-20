@@ -1,5 +1,9 @@
 import classNames from 'classnames';
-import useOsuToken, { TOKENS, formatTime, useOsuStateType } from '../../../socket';
+import useOsuToken, { useOsuStateType } from 'socket';
+
+import TOKENS from 'enums/TOKENS';
+import { formatTime } from 'enums/FORMATTERS';
+
 import styles from './SongPlayer.module.scss';
 
 export default function OverlaySongPlayer() {
@@ -8,10 +12,9 @@ export default function OverlaySongPlayer() {
 	const currentTime = useOsuToken(TOKENS.MAP_TIME_CURRENT);
 	const audioTime = useOsuToken(TOKENS.MAP_TIME_AUDIO);
 
-	const formattedAudioTime = formatTime(audioTime);
-	const formattedCurrentTime = formatTime(currentTime);
-
-	const percent = (currentTime / audioTime) * 100 + '%';
+	let formattedAudioTime = formatTime(audioTime);
+	let formattedCurrentTime = formatTime(currentTime);
+	let percent = (currentTime / audioTime) * 100 + '%';
 
 	return (
 		<div

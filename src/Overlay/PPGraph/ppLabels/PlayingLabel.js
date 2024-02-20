@@ -1,9 +1,7 @@
-'use client';
-
 import Odometer from 'react-odometerjs';
 import styles from './Base.module.scss';
 import classNames from 'classnames';
-import { useOsuMapCurrentPP, useOsuMapFcPP } from '../../../../../socket';
+import { useOsuMapCurrentPP, useOsuMapFcPP } from 'socket';
 
 export default function PpPlayingLabel({ visible = false }) {
 	const currentPP = useOsuMapCurrentPP(0, { duration: 250 });

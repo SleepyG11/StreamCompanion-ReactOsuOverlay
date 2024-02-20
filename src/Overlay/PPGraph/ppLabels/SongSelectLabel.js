@@ -1,9 +1,7 @@
-'use client';
-
 import Odometer from 'react-odometerjs';
 import styles from './Base.module.scss';
 import classNames from 'classnames';
-import { useOsuMapMaxFcPP } from '../../../../../socket';
+import { useOsuMapMaxFcPP } from 'socket';
 
 export default function PpSongSelectLabel({ visible = false }) {
 	const fullFcPP = useOsuMapMaxFcPP(0, { duration: 250 });
