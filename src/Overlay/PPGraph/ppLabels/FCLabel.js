@@ -14,9 +14,9 @@ export default function PpFcLabel({ visible = false }) {
 		if (splitFcIndex === -1) return () => config.fcPhrase;
 		return (pp) => (
 			<>
-				{config.fcPhrase.substring(0, splitFcIndex)}
+				<span className={styles.White}>{config.fcPhrase.substring(0, splitFcIndex)}</span>
 				<Odometer key={'ifFcPPResult'} value={Math.round(pp)} duration={250} className={styles.PpDigit} />
-				{config.fcPhrase.substring(splitFcIndex + 4)}
+				<span className={styles.White}>{config.fcPhrase.substring(splitFcIndex + 4)}</span>
 			</>
 		);
 	}, [config]);

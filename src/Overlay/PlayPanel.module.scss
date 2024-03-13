@@ -10,6 +10,7 @@
     transition: 0.5s;
     opacity: 0;
     transform: translateY(150%);
+    z-index: 100;
 }
 
 .ContainerVisible {
@@ -22,6 +23,7 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    text-align: center;
     font-size: 18px;
     color: rgb(240, 240, 240);
     font-weight: 700;
@@ -33,7 +35,6 @@
         height: 5px;
         width: 100%;
         border-radius: 4px;
-
     }
 }
 
@@ -64,7 +65,7 @@
         // width: 32px;
         margin-left: -12px;
         display: block;
-        margin-bottom: -0.75px;
+        transform: translateY(0.75px);
     }
 }
 

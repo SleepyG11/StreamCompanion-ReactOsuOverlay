@@ -13,7 +13,8 @@ export default function PpSongSelectLabel({ visible = false }) {
 			})}
 		>
 			<span>{'Up to '}</span>
-			<Odometer key={'mapFcPP'} value={Math.round(fullFcPP)} duration={250} className={styles.PpDigit} /> pp
+			<Odometer key={'mapFcPP'} value={Math.round(fullFcPP)} duration={250} className={styles.PpDigit} />
+			<span className={styles.White}> pp</span>
 		</div>
 	);
 }

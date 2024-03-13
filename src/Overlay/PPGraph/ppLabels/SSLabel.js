@@ -14,9 +14,9 @@ export default function PpSSLabel({ visible = false }) {
 		if (splitFcIndex === -1) return () => config.fcPhrase;
 		return (pp) => (
 			<>
-				{config.ssPhrase.substring(0, splitFcIndex)}
+				<span className={styles.White}>{config.ssPhrase.substring(0, splitFcIndex)}</span>
 				<Odometer key={'ifFcPPResult'} value={Math.round(pp)} duration={250} className={styles.PpDigit} />
-				{config.ssPhrase.substring(splitFcIndex + 4)}
+				<span className={styles.White}>{config.ssPhrase.substring(splitFcIndex + 4)}</span>
 			</>
 		);
 	}, [config]);

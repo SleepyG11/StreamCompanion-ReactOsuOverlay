@@ -1,0 +1,23 @@
+.Label {
+    position: absolute;
+    bottom: 6px;
+    left: 50%;
+
+    background-color: rgba(255, 0, 0, 0.75);
+    color: white;
+    z-index: 1000;
+    white-space: nowrap;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 10px;
+
+    opacity: 0;
+    transform: translate(-50%, 150%);
+
+    transition: 0.25s;
+}
+
+.LabelVisible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}

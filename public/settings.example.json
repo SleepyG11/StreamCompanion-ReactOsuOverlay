@@ -15,5 +15,8 @@
     "showFcPhrase": false,
     "fcPhrase": "{pp} pp FC, not bad!",
     "showSsPhrase": false,
-    "ssPhrase": "Wow! {pp} pp SS!"
+    "ssPhrase": "Wow! {pp} pp SS!",
+    "hideWhenChatOpened": false,
+    "hideWhenCinemaMode": false,
+    "hideWhenIngameInterfaceHidden": false
 }

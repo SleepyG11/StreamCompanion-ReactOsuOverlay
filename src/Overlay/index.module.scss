@@ -3,7 +3,14 @@
     width: 550px;
     position: relative;
     overflow: hidden;
-    border-radius: 16px;
+    border-radius: 12px;
+
+    opacity: 1;
+    transition: 0.25s;
+}
+
+.ContainerHidden {
+    opacity: 0;
 }
 
 .Bgs {

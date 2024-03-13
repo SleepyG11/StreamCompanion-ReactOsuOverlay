@@ -8,6 +8,7 @@ import TOKENS from 'enums/TOKENS';
 
 import DonutProgress from './DonutProgress';
 import styles from './PlayPanel.module.scss';
+import Odometer from 'react-odometerjs';
 
 const MODS_TO_DISPLAY = ['AP', 'AT', 'CN', 'DT', 'EZ', 'FL', 'HD', 'HR', 'HT', 'NC', 'NF', 'PF', 'RX', 'SD', 'SO', 'TP', 'NM'];
 
@@ -38,7 +39,9 @@ export default function OverlayPlayPanel() {
 					<img key={mod} src={`mods/${mod}.png`} alt='mod' />
 				))}
 			</div>
-			<div className={classNames(styles.Item, styles.ItemMisses)}>{missesCount}</div>
+			<div className={classNames(styles.Item, styles.ItemMisses)}>
+				<Odometer value={missesCount} duration={250} />
+			</div>
 			<div className={classNames(styles.Item, styles.ItemTime)}>
 				{config.useNegativeTimeInPlayTimer ? progress.negative : progress.positive}
 			</div>

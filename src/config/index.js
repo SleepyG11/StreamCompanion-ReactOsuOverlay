@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
 const DEFAULT_CONFIG = {
+	__CONFIG_STATUS__: 'loading',
+
 	csBottomThreshold: 2,
 	arBottomThreshold: 5,
 	odBottomThreshold: 5,
@@ -16,23 +18,44 @@ const DEFAULT_CONFIG = {
 	adjustTimeBySpeedMods: false,
 
 	showFcPhrase: false,
-	fcPhrase: '{pp} pp',
+	fcPhrase: '{pp} pp FC!',
 
 	showSsPhrase: false,
-	ssPhrase: '{pp} pp',
+	ssPhrase: '{pp} pp SS!',
+
+	hideWhenChatOpened: false,
+	hideWhenCinemaMode: false,
+	hideWhenIngameInterfaceHidden: false,
 };
 
-const context = createContext({});
+const context = createContext(DEFAULT_CONFIG);
 
 export function JSONConfigProvider({ children }) {
 	const [config, setConfig] = useState(DEFAULT_CONFIG);
 
 	useEffect(() => {
+		setConfig({
+			...DEFAULT_CONFIG,
+			__CONFIG_STATUS__: 'loading',
+		});
 		let controller = new AbortController();
 		fetch('./settings.json', { signal: controller.signal })
 			.then((r) => r.json())
-			.then(setConfig)
-			.catch(console.error);
+			.then((j) => {
+				setConfig({
+					...DEFAULT_CONFIG,
+					...j,
+					__CONFIG_STATUS__: 'loaded',
+				});
+			})
+			.catch((e) => {
+				if (e.message === 'The user aborted a request.') return;
+				setConfig({
+					...DEFAULT_CONFIG,
+					__CONFIG_STATUS__: 'error',
+				});
+				console.error(e);
+			});
 		return () => {
 			controller.abort();
 		};
