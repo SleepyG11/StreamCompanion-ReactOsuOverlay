@@ -1,12 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { XAxis, YAxis, Scatter, ScatterChart } from 'recharts';
-
-import useOsuToken, { useOsuStateType, useOsuMapMaxFcPP, useOsuMapFcPP, useOsuMapCurrentPP } from 'socket';
-
-import TOKENS from 'enums/TOKENS';
-
 import styles from './Graph.module.scss';
+import {
+	useOsuGameState,
+	useOsuMap100AccPP,
+	useOsuMapCurrentTime,
+	useOsuMapFirstObjectTime,
+	useOsuMapFullTime,
+	useOsuMapId,
+	useOsuPlayPPCurrent,
+	useOsuPlayPPIfFC,
+} from '@/features/hooks';
+import { useTransition } from '@/features/transition';
+import { GAME_STATE_CATEGORY } from '@/features/enums';
 
 function RenderNoShape() {
 	return null;
@@ -20,18 +27,17 @@ function throttle(func, ms) {
 
 	function wrapper() {
 		if (isThrottled) {
-			// (2)
 			savedArgs = arguments;
 			savedThis = this;
 			return;
 		}
 
-		func.apply(this, arguments); // (1)
+		func.apply(this, arguments);
 
 		isThrottled = true;
 
 		setTimeout(function () {
-			isThrottled = false; // (3)
+			isThrottled = false;
 			if (savedArgs) {
 				wrapper.apply(savedThis, savedArgs);
 				savedArgs = savedThis = null;
@@ -56,15 +62,15 @@ export default function Graph({ visible = false }) {
 	const [maxPPDots, setMaxPPDots] = useState([]);
 	const [ppDots, setPPDots] = useState([]);
 
-	const state = useOsuStateType();
+	const { category: stateCategory } = useOsuGameState();
 
-	const mapId = useOsuToken(TOKENS.MAP_ID);
-	const currentTime = useOsuToken(TOKENS.MAP_TIME_CURRENT);
-	const fullTime = useOsuToken(TOKENS.MAP_TIME_FULL);
-	const firstObjTime = useOsuToken(TOKENS.MAP_TIME_FIRST_OBJECT);
-	const ifFcPP = useOsuMapFcPP(0, { duration: 500 });
-	const fullFcPP = useOsuMapMaxFcPP(0, { duration: 500 });
-	const currentPP = useOsuMapCurrentPP(0, { duration: 500 });
+	const mapId = useOsuMapId();
+	const currentTime = useOsuMapCurrentTime();
+	const fullTime = useOsuMapFullTime();
+	const firstObjTime = useOsuMapFirstObjectTime();
+	const ifFcPP = useTransition(useOsuPlayPPIfFC());
+	const fullFcPP = useTransition(useOsuMap100AccPP());
+	const currentPP = useTransition(useOsuPlayPPCurrent());
 
 	// ----------------------
 
@@ -93,10 +99,9 @@ export default function Graph({ visible = false }) {
 	}, []);
 
 	useEffect(() => {
-		if (state !== 'playing') return;
-		if (currentTime > fullTime) {
-			return;
-		} else if (currentTime < firstObjTime) {
+		if (stateCategory !== GAME_STATE_CATEGORY.PLAYING) return;
+		if (currentTime > fullTime) return;
+		if (currentTime < firstObjTime) {
 			if (reloaded) return;
 			setReloaded(true);
 			setFade(true);
@@ -112,16 +117,15 @@ export default function Graph({ visible = false }) {
 	}, [currentTime]);
 
 	useEffect(() => {
-		if (state !== 'resultScreen') {
-			setReloaded(true);
-			setFade(true);
-			setTimeout(() => {
-				setFade(false);
-				setMaxPPDots([]);
-				setPPDots([]);
-			}, 500);
-		}
-	}, [state]);
+		if (stateCategory === GAME_STATE_CATEGORY.RESULT_SCREEN) return;
+		setReloaded(true);
+		setFade(true);
+		setTimeout(() => {
+			setFade(false);
+			setMaxPPDots([]);
+			setPPDots([]);
+		}, 500);
+	}, [stateCategory]);
 
 	useEffect(() => {
 		setMaxPPDots([]);
@@ -174,18 +178,23 @@ export default function Graph({ visible = false }) {
 	);
 	const yAxis = useMemo(() => <YAxis key={'y'} type='number' dataKey='y' hide domain={[0, fullFcPP]} />, [fullFcPP]);
 
-	return (
-		<ScatterChart
-			width={300}
-			height={48}
-			className={classNames(styles.Chart, {
-				[styles.ChartVisible]: visible,
-			})}
-		>
-			{xAxis}
-			{yAxis}
-			{maxPpScatter}
-			{ppScatter}
-		</ScatterChart>
-	);
+	const chart = useMemo(() => {
+		return (
+			<ScatterChart
+				key='chart'
+				width={300}
+				height={48}
+				className={classNames(styles.Chart, {
+					[styles.ChartVisible]: true,
+				})}
+			>
+				{xAxis}
+				{yAxis}
+				{maxPpScatter}
+				{ppScatter}
+			</ScatterChart>
+		);
+	}, [xAxis, yAxis, maxPpScatter, ppScatter]);
+
+	return chart;
 }

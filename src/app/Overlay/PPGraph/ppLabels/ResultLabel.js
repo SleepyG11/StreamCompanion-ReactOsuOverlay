@@ -1,11 +1,11 @@
 import Odometer from 'react-odometerjs';
 import styles from './Base.module.scss';
 import classNames from 'classnames';
-import { useOsuMapFcPP, useOsuMapMaxFcPP } from 'socket';
+import { useOsuMap100AccPP, useOsuPlayPPIfFC } from '@/features/hooks';
 
 export default function PpResultLabel({ visible = false }) {
-	const ifFcPP = useOsuMapFcPP(0, { duration: 250 });
-	const fullFcPP = useOsuMapMaxFcPP(0, { duration: 250 });
+	const ifFcPP = useOsuPlayPPIfFC();
+	const fullFcPP = useOsuMap100AccPP();
 
 	return (
 		<div

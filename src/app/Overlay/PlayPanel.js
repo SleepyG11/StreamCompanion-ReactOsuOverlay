@@ -1,33 +1,31 @@
 import classNames from 'classnames';
 import { useMemo } from 'react';
 
-import useJSONConfig from 'config';
-import useOsuToken, { useOsuMapProgress, useOsuStateType } from 'socket';
-
-import TOKENS from 'enums/TOKENS';
-
 import DonutProgress from './DonutProgress';
 import styles from './PlayPanel.module.scss';
 import Odometer from 'react-odometerjs';
+import useJSONConfig from '@/features/config';
+import { useOsuGameState, useOsuMapProgress, useOsuPlayMisses, useOsuPlayMods } from '@/features/hooks';
+import { GAME_STATE_CATEGORY } from '@/features/enums';
 
-const MODS_TO_DISPLAY = ['AP', 'AT', 'CN', 'DT', 'EZ', 'FL', 'HD', 'HR', 'HT', 'NC', 'NF', 'PF', 'RX', 'SD', 'SO', 'TP', 'NM'];
+const MODS_TO_DISPLAY = ['AP', 'AU', 'CN', 'DT', 'EZ', 'FL', 'HD', 'HR', 'HT', 'NC', 'NF', 'PF', 'RX', 'SD', 'SO', 'TP', 'NM'];
 
 export default function OverlayPlayPanel() {
 	const config = useJSONConfig();
 
-	const state = useOsuStateType();
-	const progress = useOsuMapProgress();
-	const mods = useOsuToken(TOKENS.MAP_MODS_ARRAY);
-	const missesCount = useOsuToken(TOKENS.PLAY_0);
+	const { category: stateCategory } = useOsuGameState();
+	const progress = useOsuMapProgress(config.adjustTimeBySpeedMods);
+	const mods = useOsuPlayMods();
+	const missesCount = useOsuPlayMisses();
 
 	let modsArray = useMemo(() => {
-		return mods.split(',').filter((mod) => MODS_TO_DISPLAY.includes(mod));
+		return mods ? mods.filter((mod) => MODS_TO_DISPLAY.includes(mod)) : [];
 	}, [mods]);
 
 	return (
 		<div
 			className={classNames(styles.Container, {
-				[styles.ContainerVisible]: state === 'playing',
+				[styles.ContainerVisible]: stateCategory === GAME_STATE_CATEGORY.PLAYING,
 			})}
 		>
 			<div

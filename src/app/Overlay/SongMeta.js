@@ -1,14 +1,13 @@
 import classNames from 'classnames';
 import { useEffect, useRef, useState } from 'react';
 
-import useOsuToken, { useOsuStateType } from 'socket';
-import useJSONConfig from 'config';
-import TOKENS from 'enums/TOKENS';
-
 import styles from './SongMeta.module.scss';
+import { useOsuGameState, useOsuMapArtist, useOsuMapDifficulty, useOsuMapTitle } from '@/features/hooks';
+import { GAME_STATE_CATEGORY } from '@/features/enums';
+import useJSONConfig from '@/features/config';
 
 const containerStates = {
-	idle: styles.ContainerMainMenu,
+	[GAME_STATE_CATEGORY.IDLE]: styles.ContainerMainMenu,
 };
 
 const longOverflowPoint = 550 - 12 * 2;
@@ -24,17 +23,12 @@ export default function OverlaySongMeta() {
 
 	const [titleOverflow, setTitleOverflow] = useState({ artist: false, diff: false, long: false, short: false });
 
-	const state = useOsuStateType();
+	const { category: state } = useOsuGameState();
 	const prevStateRef = useRef(state);
 
-	const romanSongTitle = useOsuToken(TOKENS.MAP_TITLE);
-	const originalSongTitle = useOsuToken(TOKENS.MAP_TITLE_ORIGINAL);
-	const romanSongArtist = useOsuToken(TOKENS.MAP_ARTIST);
-	const originalSongArtist = useOsuToken(TOKENS.MAP_ARTIST_ORIGINAL);
-	const songDifficulty = useOsuToken(TOKENS.MAP_DIFFICULTY);
-
-	let songTitle = config.useOriginalLanguageForSongArtistAndTitle ? originalSongTitle : romanSongTitle;
-	let songArtist = config.useOriginalLanguageForSongArtistAndTitle ? originalSongArtist : romanSongArtist;
+	const songTitle = useOsuMapTitle(config.useOriginalLanguageForSongArtistAndTitle);
+	const songArtist = useOsuMapArtist(config.useOriginalLanguageForSongArtistAndTitle);
+	const songDifficulty = useOsuMapDifficulty();
 
 	function recalculateOverflows() {
 		setTitleOverflow({
@@ -54,15 +48,15 @@ export default function OverlaySongMeta() {
 	useEffect(() => {
 		let prevState = prevStateRef.current;
 		prevStateRef.current = state;
-		if (prevState !== 'idle' && prevState !== 'songSelect') return;
+		if (prevState !== GAME_STATE_CATEGORY.IDLE && prevState !== GAME_STATE_CATEGORY.SONG_SELECT) return;
 
 		let target;
 		switch (state) {
-			case 'idle': {
+			case GAME_STATE_CATEGORY.IDLE: {
 				target = longTitleRef.current;
 				break;
 			}
-			case 'songSelect': {
+			case GAME_STATE_CATEGORY.SONG_SELECT: {
 				target = shortTitleRef.current;
 				break;
 			}

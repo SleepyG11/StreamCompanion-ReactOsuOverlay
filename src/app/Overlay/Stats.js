@@ -2,23 +2,23 @@ import { useEffect, useMemo } from 'react';
 import { useTransitionValue } from 'react-transition-value';
 import classNames from 'classnames';
 
-import useOsuToken, { useOsuStateType, useOsuTransitionToken } from 'socket';
-import TOKENS from 'enums/TOKENS';
-import useJSONConfig from 'config';
-
 import styles from './Stats.module.scss';
+import useJSONConfig from '@/features/config';
+import { useOsuGameMode, useOsuGameState, useOsuMapAR, useOsuMapCS, useOsuMapHP, useOsuMapOD, useOsuMapStars } from '@/features/hooks';
+import { useTransition } from '@/features/transition';
+import { GAME_MODE, GAME_STATE_CATEGORY } from '@/features/enums';
 
 export default function OverlayStats() {
 	const config = useJSONConfig();
 
-	const state = useOsuStateType();
-	const gameMode = useOsuToken(TOKENS.GAME_MODE);
+	const { category: stateCategory } = useOsuGameState();
+	const { mode } = useOsuGameMode();
 
-	const sr = useOsuTransitionToken(TOKENS.MAP_STARS, 0, { throttle: true, duration: 500 });
-	const cs = useOsuTransitionToken(TOKENS.MAP_CS, 0, { throttle: true, duration: 500 });
-	const ar = useOsuTransitionToken(TOKENS.MAP_AR, 0, { throttle: true, duration: 500 });
-	const od = useOsuTransitionToken(TOKENS.MAP_OD, 0, { throttle: true, duration: 500 });
-	const hp = useOsuTransitionToken(TOKENS.MAP_HP, 0, { throttle: true, duration: 500 });
+	const sr = useTransition(useOsuMapStars());
+	const cs = useTransition(useOsuMapCS());
+	const ar = useTransition(useOsuMapAR());
+	const od = useTransition(useOsuMapOD());
+	const hp = useTransition(useOsuMapHP());
 
 	const [divider, setDivider] = useTransitionValue(10, {
 		duration: 250,
@@ -28,13 +28,15 @@ export default function OverlayStats() {
 		setDivider([cs, ar, od, hp].some((v) => v > 10) ? 11 : 10);
 	}, [cs, ar, od, hp, setDivider]);
 
-	const isTaikoOrMania = gameMode === 'Taiko' || gameMode === 'OsuMania';
+	const isTaikoOrMania = mode === GAME_MODE.TAIKO || mode === GAME_MODE.MANIA;
 
 	// ------------------
 
 	const srBar = useMemo(() => {
 		let formattedSr;
-		if (sr < 1000) {
+		if (!sr) {
+			formattedSr = '0';
+		} else if (sr < 1000) {
 			formattedSr = sr.toPrecision(3).substring(0, 4);
 		} else if (sr < 10000) {
 			let [first, second] = sr.toString().split('');
@@ -123,8 +125,12 @@ export default function OverlayStats() {
 		<>
 			<div
 				className={classNames(styles.List, {
-					[styles.ListVisible]: ['songSelect', 'resultScreen', 'playing'].includes(state),
-					[styles.ListOnPlaying]: state === 'playing',
+					[styles.ListVisible]: [
+						GAME_STATE_CATEGORY.SONG_SELECT,
+						GAME_STATE_CATEGORY.RESULT_SCREEN,
+						GAME_STATE_CATEGORY.PLAYING,
+					].includes(stateCategory),
+					[styles.ListOnPlaying]: stateCategory === GAME_STATE_CATEGORY.PLAYING,
 					[styles.ListCurrent]: isTaikoOrMania,
 				})}
 			>
@@ -134,8 +140,12 @@ export default function OverlayStats() {
 			</div>
 			<div
 				className={classNames(styles.List, {
-					[styles.ListVisible]: ['songSelect', 'resultScreen', 'playing'].includes(state),
-					[styles.ListOnPlaying]: state === 'playing',
+					[styles.ListVisible]: [
+						GAME_STATE_CATEGORY.SONG_SELECT,
+						GAME_STATE_CATEGORY.RESULT_SCREEN,
+						GAME_STATE_CATEGORY.PLAYING,
+					].includes(stateCategory),
+					[styles.ListOnPlaying]: stateCategory === GAME_STATE_CATEGORY.PLAYING,
 					[styles.ListCurrent]: !isTaikoOrMania,
 				})}
 			>

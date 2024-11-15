@@ -1,16 +1,14 @@
 import classNames from 'classnames';
-import useOsuToken, { useOsuStateType } from 'socket';
-
-import TOKENS from 'enums/TOKENS';
-import { formatTime } from 'enums/FORMATTERS';
 
 import styles from './SongPlayer.module.scss';
+import { formatTime, useOsuGameState, useOsuMapAudioTime, useOsuMapCurrentTime } from '@/features/hooks';
+import { GAME_STATE_CATEGORY } from '@/features/enums';
 
 export default function OverlaySongPlayer() {
-	const state = useOsuStateType();
+	const { category: state } = useOsuGameState();
 
-	const currentTime = useOsuToken(TOKENS.MAP_TIME_CURRENT);
-	const audioTime = useOsuToken(TOKENS.MAP_TIME_AUDIO);
+	const currentTime = useOsuMapCurrentTime();
+	const audioTime = useOsuMapAudioTime();
 
 	let formattedAudioTime = formatTime(audioTime);
 	let formattedCurrentTime = formatTime(currentTime);
@@ -19,7 +17,7 @@ export default function OverlaySongPlayer() {
 	return (
 		<div
 			className={classNames(styles.Container, {
-				[styles.ContainerVisible]: state === 'idle' && audioTime,
+				[styles.ContainerVisible]: state === GAME_STATE_CATEGORY.IDLE && audioTime,
 			})}
 		>
 			<div className={styles.Line}>

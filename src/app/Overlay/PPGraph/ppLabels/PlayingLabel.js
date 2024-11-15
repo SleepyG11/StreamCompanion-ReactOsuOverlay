@@ -1,11 +1,11 @@
 import Odometer from 'react-odometerjs';
 import styles from './Base.module.scss';
 import classNames from 'classnames';
-import { useOsuMapCurrentPP, useOsuMapFcPP } from 'socket';
+import { useOsuPlayPPCurrent, useOsuPlayPPIfFC } from '@/features/hooks';
 
 export default function PpPlayingLabel({ visible = false }) {
-	const currentPP = useOsuMapCurrentPP(0, { duration: 250 });
-	const ifFcPP = useOsuMapFcPP(0, { duration: 250 });
+	const currentPP = useOsuPlayPPCurrent();
+	const ifFcPP = useOsuPlayPPIfFC();
 
 	return (
 		<div

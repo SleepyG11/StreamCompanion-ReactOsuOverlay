@@ -1,7 +1,10 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { CONFIG_STATUS } from './enums';
 
 const DEFAULT_CONFIG = {
-	__CONFIG_STATUS__: 'loading',
+	__CONFIG_STATUS__: CONFIG_STATUS.LOADING,
+
+	streamCompanionHref: 'http://localhost:20727',
 
 	csBottomThreshold: 2,
 	arBottomThreshold: 5,
@@ -34,31 +37,18 @@ export function JSONConfigProvider({ children }) {
 	const [config, setConfig] = useState(DEFAULT_CONFIG);
 
 	useEffect(() => {
-		setConfig({
-			...DEFAULT_CONFIG,
-			__CONFIG_STATUS__: 'loading',
-		});
-		let controller = new AbortController();
-		fetch('./settings.json', { signal: controller.signal })
-			.then((r) => r.json())
-			.then((j) => {
-				setConfig({
-					...DEFAULT_CONFIG,
-					...j,
-					__CONFIG_STATUS__: 'loaded',
-				});
-			})
-			.catch((e) => {
-				if (e.message === 'The user aborted a request.') return;
-				setConfig({
-					...DEFAULT_CONFIG,
-					__CONFIG_STATUS__: 'error',
-				});
-				console.error(e);
+		if (window.CONFIG) {
+			setConfig({
+				...DEFAULT_CONFIG,
+				...window.CONFIG,
+				__CONFIG_STATUS__: CONFIG_STATUS.LOADED,
 			});
-		return () => {
-			controller.abort();
-		};
+		} else {
+			setConfig({
+				...DEFAULT_CONFIG,
+				__CONFIG_STATUS__: CONFIG_STATUS.ERROR,
+			});
+		}
 	}, []);
 
 	return <context.Provider value={config}>{children}</context.Provider>;
